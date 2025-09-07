@@ -1,21 +1,41 @@
-import React from "react";
+import React, { forwardRef, type ReactNode } from "react";
 import clsx from "clsx";
+import Loader from "../../helperComponents/Loader";
 
-type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "default" | "primary" | "danger" | "success" | "warning";
+export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?:
+    | "default"
+    | "primary"
+    | "danger"
+    | "success"
+    | "warning"
+    | "dashed"
+    | "text";
   size?: "sm" | "md" | "lg";
   disabled?: boolean;
+  block?: boolean;
+  loading?: boolean;
+  icon?: ReactNode;
+  iconPosition?: "start" | "end";
 };
 
 const base =
-  "rounded font-medium focus:outline-none transition-colors inline-flex items-center justify-center";
+  "rounded-md font-medium focus:outline-none transition-colors inline-flex items-center justify-center gap-2";
 
 const variants = {
-  default: "bg-gray-200 text-gray-800 hover:bg-gray-300",
-  primary: "bg-primary hover:opacity-90",
-  danger: "bg-danger hover:opacity-90",
-  success: "bg-success hover:opacity-90",
-  warning: "bg-warning hover:opacity-90",
+  default:
+    "bg-gray-200 text-gray-800 hover:bg-gray-300 disabled:bg-gray-300 disabled:text-gray-500",
+  primary:
+    "bg-primary text-white hover:opacity-90 disabled:opacity-60 disabled:hover:opacity-60",
+  danger:
+    "bg-danger text-white hover:opacity-90 disabled:opacity-60 disabled:hover:opacity-60",
+  success:
+    "bg-success text-white hover:opacity-90 disabled:opacity-60 disabled:hover:opacity-60",
+  warning:
+    "bg-warning text-white hover:opacity-90 disabled:opacity-60 disabled:hover:opacity-60",
+  dashed:
+    "border-2 border-dashed border-gray-400 text-gray-700 hover:border-gray-600 hover:text-gray-900 disabled:border-gray-300 disabled:text-gray-400",
+  text: "bg-transparent text-black hover:bg-gray-200 disabled:opacity-80 disabled:bg-gray-80",
 };
 
 const sizes = {
@@ -24,32 +44,73 @@ const sizes = {
   lg: "px-6 py-3 text-lg",
 };
 
-const Button: React.FC<ButtonProps> = ({
-  children,
-  variant = "default",
-  size = "md",
-  className,
-  disabled = false,
-  ...rest
-}) => {
-  const disabledStyles = `${
-    disabled ? "cursor-not-allowed" : "cursor-pointer"
-  }`;
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      children,
+      variant = "default",
+      size = "md",
+      className,
+      disabled = false,
+      icon,
+      iconPosition = "start",
+      loading = false,
+      block = false,
+      ...rest
+    },
+    ref
+  ) => {
+    const isDisabled = disabled || loading;
 
-  return (
-    <button
-      className={clsx(
-        base,
-        variants[variant],
-        sizes[size],
-        disabledStyles,
-        className
-      )}
-      {...rest}
-    >
-      {children}
-    </button>
-  );
-};
+    const renderStart = () => {
+      if (loading && iconPosition === "start")
+        return <Loader size={18} aria-hidden="true" />;
+
+      if (!loading && icon && iconPosition === "start")
+        return <span className="flex items-center">{icon}</span>;
+
+      return null;
+    };
+
+    const renderEnd = () => {
+      if (loading && iconPosition === "end")
+        return <Loader size={18} aria-hidden="true" />;
+
+      if (!loading && icon && iconPosition === "end")
+        return <span className="flex items-center">{icon}</span>;
+
+      return null;
+    };
+
+    return (
+      <button
+        ref={ref}
+        type={rest.type ?? "button"}
+        disabled={isDisabled}
+        aria-disabled={isDisabled}
+        aria-busy={loading || undefined}
+        className={clsx(
+          base,
+          variants[variant],
+          sizes[size],
+          isDisabled ? "cursor-not-allowed" : "cursor-pointer",
+          className,
+          block ? "w-full" : "w-fit"
+        )}
+        {...rest}
+      >
+        {renderStart()}
+
+        <span className={clsx(loading ? "opacity-90" : "opacity-100")}>
+          {children}
+        </span>
+
+        {renderEnd()}
+      </button>
+    );
+  }
+);
+
+Button.displayName = "Button";
 
 export default Button;
