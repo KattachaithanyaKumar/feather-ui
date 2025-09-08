@@ -10,8 +10,6 @@
     "skipLibCheck": true,
     "noEmit": false,
     "removeComments": true,
-
-    /* These are important for JSX + default imports */
     "jsx": "react-jsx",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
