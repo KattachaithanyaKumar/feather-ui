@@ -13,8 +13,8 @@
     },
     "./theme": {
       "types": "./dist/theme/setTheme.d.ts",
-      "import": "./dist/theme.js",
-      "require": "./dist/theme.js"
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js"
     },
     "./feather-theme.css": "./dist/feather-theme.css"
   },

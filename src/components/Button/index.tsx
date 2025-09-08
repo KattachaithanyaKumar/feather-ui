@@ -17,31 +17,32 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;
   icon?: ReactNode;
   iconPosition?: "start" | "end";
+  ghost?: boolean;
 };
 
 const base =
-  "rounded-md font-medium focus:outline-none transition-colors inline-flex items-center justify-center gap-2";
+  "rounded-md font-medium focus:outline-none transition-colors inline-flex items-center justify-center gap-2 shadow-sm";
 
 const variants = {
   default:
-    "bg-gray-200 text-gray-800 hover:bg-gray-300 disabled:bg-gray-300 disabled:text-gray-500",
+    "bg-gray-200 text-gray-800 hover:bg-gray-300 disabled:bg-gray-300 disabled:text-gray-500 shadow-sm",
   primary:
-    "bg-primary text-white hover:opacity-90 disabled:opacity-60 disabled:hover:opacity-60",
+    "bg-primary text-white hover:opacity-90 disabled:opacity-60 disabled:hover:opacity-60 shadow-sm",
   danger:
-    "bg-danger text-white hover:opacity-90 disabled:opacity-60 disabled:hover:opacity-60",
+    "bg-danger text-white hover:opacity-90 disabled:opacity-60 disabled:hover:opacity-60 shadow-sm",
   success:
-    "bg-success text-white hover:opacity-90 disabled:opacity-60 disabled:hover:opacity-60",
+    "bg-success text-white hover:opacity-90 disabled:opacity-60 disabled:hover:opacity-60 shadow-sm",
   warning:
-    "bg-warning text-white hover:opacity-90 disabled:opacity-60 disabled:hover:opacity-60",
+    "bg-warning text-white hover:opacity-90 disabled:opacity-60 disabled:hover:opacity-60 shadow-sm",
   dashed:
     "border-2 border-dashed border-gray-400 text-gray-700 hover:border-gray-600 hover:text-gray-900 disabled:border-gray-300 disabled:text-gray-400",
   text: "bg-transparent text-black hover:bg-gray-200 disabled:opacity-80 disabled:bg-gray-80",
 };
 
 const sizes = {
-  sm: "px-2 py-1 text-sm",
-  md: "px-4 py-2 text-base",
-  lg: "px-6 py-3 text-lg",
+  sm: "px-8 py-1 text-sm",
+  md: "px-10 py-2 text-base",
+  lg: "px-12 py-3 text-lg",
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -56,6 +57,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       iconPosition = "start",
       loading = false,
       block = false,
+      ghost = false,
       ...rest
     },
     ref
@@ -82,6 +84,13 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       return null;
     };
 
+    // ghost mode overrides everything: transparent bg + border
+    const ghostClasses = ghost
+      ? "bg-transparent border-2 text-gray-800 border-gray-400 hover:bg-gray-100"
+      : null;
+
+    const normalClasses = ghost ? null : variants[variant];
+
     return (
       <button
         ref={ref}
@@ -91,9 +100,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         aria-busy={loading || undefined}
         className={clsx(
           base,
-          variants[variant],
+          ghost ? ghostClasses : normalClasses,
           sizes[size],
-          isDisabled ? "cursor-not-allowed" : "cursor-pointer",
+          isDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
           className,
           block ? "w-full" : "w-fit"
         )}
