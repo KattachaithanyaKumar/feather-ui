@@ -32,9 +32,9 @@
     "build-storybook": "storybook build",
     "prepublishOnly": "npm run build",
     "build:types": "tsc -p tsconfig.build.json",
-    "build:types:bundle": "rollup -c rollup.types.config.mjs",
+    "build:types:bundle": "node scripts/strip-css-from-dts.cjs && rollup -c rollup.types.config.mjs",
     "build:types:all": "npm run build:types && npm run build:types:bundle",
-    "build": "npm run build:types:all && tsc -b && vite build && node scripts/postbuild.cjs"
+    "build": "npm run clean && tsc -p tsconfig.build.json && tsc -b && vite build && node scripts/strip-css-from-dts.cjs && rollup -c rollup.types.config.mjs && node scripts/postbuild.cjs"
   },
   "peerDependencies": {
     "react": "^18 || ^19",

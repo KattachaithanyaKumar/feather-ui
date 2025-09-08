@@ -4,7 +4,7 @@
     "declaration": true,
     "emitDeclarationOnly": true,
     "declarationMap": false,
-    "declarationDir": "dist/src",
+    "declarationDir": "dist",
     "outDir": "dist",
     "rootDir": "src",
     "skipLibCheck": true,

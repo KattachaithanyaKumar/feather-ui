@@ -11,6 +11,7 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
+    emptyOutDir: false,
     lib: {
       entry: path.resolve(dirname, "src/index.ts"),
       name: "FeatherUI",
