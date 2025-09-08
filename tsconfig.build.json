@@ -1,5 +1,5 @@
 {
-  "extends": "./tsconfig.app.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "declaration": true,
     "emitDeclarationOnly": true,
@@ -8,8 +8,18 @@
     "outDir": "dist",
     "rootDir": "src",
     "skipLibCheck": true,
-    "stripInternal": false,
-    "noEmit": false
+    "noEmit": false,
+    "removeComments": true,
+
+    /* These are important for JSX + default imports */
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "allowImportingTsExtensions": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "types": ["node"]
   },
   "include": ["src"]
 }
