@@ -23,13 +23,17 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && node scripts/postbuild.cjs",
+    "build-old": "tsc -b && vite build && node scripts/postbuild.cjs",
     "clean": "rimraf dist",
     "lint": "eslint .",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "build:types": "tsc -p tsconfig.build.json",
+    "build:types:bundle": "rollup -c rollup.types.config.mjs",
+    "build:types:all": "npm run build:types && npm run build:types:bundle",
+    "build": "npm run build:types:all && tsc -b && vite build && node scripts/postbuild.cjs"
   },
   "peerDependencies": {
     "react": "^18 || ^19",
@@ -72,6 +76,8 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "rimraf": "^3.0.2",
+    "rollup": "^4.50.1",
+    "rollup-plugin-dts": "^6.2.3",
     "storybook": "^9.1.5",
     "tailwindcss": "^4.1.13",
     "typescript": "~5.8.3",
