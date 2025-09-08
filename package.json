@@ -8,13 +8,11 @@
   "exports": {
     ".": {
       "import": "./dist/index.esm.js",
-      "require": "./dist/index.cjs.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs.js"
     },
     "./theme": {
       "import": "./dist/theme.js",
-      "require": "./dist/theme.js",
-      "types": "./dist/theme.d.ts"
+      "require": "./dist/theme.js"
     }
   },
   "types": "dist/index.d.ts",
