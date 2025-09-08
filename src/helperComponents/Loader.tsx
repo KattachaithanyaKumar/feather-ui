@@ -1,9 +1,11 @@
 import React from "react";
 
-const Loader: React.FC<{ size?: number; className?: string }> = ({
-  size = 20,
-  className = "",
-}) => {
+export type LoaderProps = {
+  size?: number;
+  className?: string;
+};
+
+const Loader: React.FC<LoaderProps> = ({ size = 20, className = "" }) => {
   return (
     <svg
       className={`animate-spin text-current ${className}`}
