@@ -1,69 +1,159 @@
-# React + TypeScript + Vite
+# Feather UI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A lightweight, customizable React component library built with **Tailwind CSS**.  
+Provides accessible, theme-ready UI primitives like buttons, loaders, and more.
 
-Currently, two official plugins are available:
+[![npm version](https://img.shields.io/npm/v/@chaithanya-kumar-katta/feather-ui.svg?style=flat-square)](https://www.npmjs.com/package/@chaithanya-kumar-katta/feather-ui)
+[![npm downloads](https://img.shields.io/npm/dm/@chaithanya-kumar-katta/feather-ui.svg?style=flat-square)](https://www.npmjs.com/package/@chaithanya-kumar-katta/feather-ui)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## ✨ Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- ⚡ Simple React components with sensible defaults
+- 🎨 Fully customizable via CSS variables or Tailwind
+- 🧩 Works out-of-the-box with **React 18+ / 19+**
+- 🔒 Accessible by default
+- 📦 Tree-shakable & ESM/CJS builds
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## 📦 Installation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+# with npm
+npm install @chaithanya-kumar-katta/feather-ui
+
+# or with yarn
+yarn add @chaithanya-kumar-katta/feather-ui
+
+# or with pnpm
+pnpm add @chaithanya-kumar-katta/feather-ui
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🚀 Usage
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Import the components you need:
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```tsx
+import React from "react";
+import { Button } from "@chaithanya-kumar-katta/feather-ui";
+import "@chaithanya-kumar-katta/feather-ui/dist/feather-theme.css";
+// required if not auto-imported
+
+export default function App() {
+  return (
+    <div className="p-4">
+      <Button variant="primary" size="md">
+        Click Me
+      </Button>
+    </div>
+  );
+}
 ```
+
+## With Icons
+
+Feather UI supports passing any ReactNode as an icon:
+
+```tsx
+import { Plus } from "lucide-react";
+import { Button } from "@chaithanya-kumar-katta/feather-ui";
+
+<Button variant="success" icon={<Plus size={18} />}>
+  Add Item
+</Button>;
+```
+
+## Loading State
+
+```tsx
+<Button variant="primary" loading>
+  Saving...
+</Button>
+```
+
+## Block (full width)
+
+```tsx
+<Button variant="danger" block>
+  Delete
+</Button>
+```
+
+## 🎨 Theming
+
+Feather UI exposes CSS variables you can override to fit your brand.
+
+Default variables (:root):
+
+```css
+:root {
+  --color-primary-500: #3b82f6;
+  --color-danger-500: #ef4444;
+  --color-success-500: #22c55e;
+  --color-warning-500: #eab308;
+  --color-gray-500: #6b7280;
+}
+```
+
+Override them in your own CSS:
+
+```css
+:root {
+  --color-primary-500: #7c3aed; /* purple */
+  --color-danger-500: #f43f5e; /* rose */
+}
+```
+
+Or set them programmatically:
+
+```ts
+import { setFeatherTheme } from "@chaithanya-kumar-katta/feather-ui";
+
+setFeatherTheme({
+  "--color-primary-500": "#7c3aed",
+  "--color-danger-500": "#f43f5e",
+});
+```
+
+## 📚 Components
+
+Currently included:
+
+Button
+
+Loader
+
+More components coming soon!
+
+## 🛠 Development
+
+Clone the repo and install dependencies:
+
+```bash
+git clone https://github.com/<your-username>/feather-ui.git
+cd feather-ui
+npm install
+```
+
+Run Storybook:
+
+```bash
+npm run storybook
+```
+
+Build the package:
+
+```bash
+npm run build
+```
+
+🤝 Contributing
+Contributions, issues and feature requests are welcome!
+Feel free to open a PR or start a discussion.
+
+## 📄 License
+
+MIT © 2025 Chaithanya Kumar
