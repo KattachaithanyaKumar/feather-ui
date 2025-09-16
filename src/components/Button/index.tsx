@@ -36,7 +36,7 @@ const variants = {
     "bg-warning text-white hover:opacity-90 disabled:opacity-60 disabled:hover:opacity-60 shadow-sm",
   dashed:
     "border-2 border-dashed border-gray-400 text-gray-700 hover:border-gray-600 hover:text-gray-900 disabled:border-gray-300 disabled:text-gray-400",
-  text: "bg-transparent text-black hover:bg-gray-200 disabled:opacity-80 disabled:bg-gray-80",
+  text: "bg-transparent text-black hover:bg-gray-200 disabled:opacity-80 disabled:bg-gray-80 shadow-none",
 };
 
 const sizes = {
