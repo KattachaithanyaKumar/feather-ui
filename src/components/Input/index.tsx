@@ -165,6 +165,13 @@ function InputInner<T extends FieldValues = FieldValues>(
     [setValue, onChange]
   );
 
+  const hasError = Boolean(error) || status === "error";
+
+  // helper class to apply when error present
+  const errorBorderClasses = hasError
+    ? "border-[var(--color-danger-500)] focus-within:ring-2 focus-within:ring-[var(--color-danger-500)]"
+    : "";
+
   const [showPassword, setShowPassword] = useState(false);
   const effectiveType =
     type === "password" && togglePassword
@@ -179,7 +186,8 @@ function InputInner<T extends FieldValues = FieldValues>(
     sizes[size],
     variantClasses[variant],
     status ? statusClasses[status] : null,
-    status && `data-[status=${status}]`
+    status && `data-[status=${status}]`,
+    errorBorderClasses
   );
 
   const describedBy: string[] = [];
@@ -287,7 +295,9 @@ function InputInner<T extends FieldValues = FieldValues>(
                 id={helpId}
                 className={clsx(
                   "text-xs",
-                  showError ? "text-red-600" : "text-gray-600"
+                  showError
+                    ? "text-[var(--color-danger-600)]"
+                    : "text-[var(--color-gray-600)]"
                 )}
               >
                 {showError ? errorMessage : helperText}
@@ -367,7 +377,9 @@ function InputInner<T extends FieldValues = FieldValues>(
         id={helpId}
         className={clsx(
           "text-xs",
-          showError ? "text-red-600" : "text-gray-600"
+          showError
+            ? "text-[var(--color-danger-600)]"
+            : "text-[var(--color-gray-600)]"
         )}
       >
         {showError ? errorMessage : helperText}
