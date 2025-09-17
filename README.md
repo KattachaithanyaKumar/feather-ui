@@ -128,28 +128,6 @@ Loader
 
 More components coming soon!
 
-## 🛠 Development
-
-Clone the repo and install dependencies:
-
-```bash
-git clone https://github.com/<your-username>/feather-ui.git
-cd feather-ui
-npm install
-```
-
-Run Storybook:
-
-```bash
-npm run storybook
-```
-
-Build the package:
-
-```bash
-npm run build
-```
-
 🤝 Contributing
 Contributions, issues and feature requests are welcome!
 Feel free to open a PR or start a discussion.
