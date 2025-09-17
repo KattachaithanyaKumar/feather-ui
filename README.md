@@ -122,9 +122,21 @@ setFeatherTheme({
 
 Currently included:
 
-Button
+### Button
 
-Loader
+<img src="image.png" alt="Button" width="200"/>
+
+### Input
+
+<img src="image-1.png" alt="Input" width="700"/>
+
+### Textarea
+
+<img src="image-2.png" alt="Textarea" width="700"/>
+
+### Form
+
+<img src="image-4.png" alt="Form" width="700"/>
 
 More components coming soon!
 
