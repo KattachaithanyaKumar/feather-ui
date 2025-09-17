@@ -30,7 +30,6 @@ export function Form<T extends FieldValues = FieldValues>({
 }: FormProps<T>) {
   const internalMethods = useForm<T>(options);
   const formMethods = methods || internalMethods;
-
   const submitHandler = onSubmit
     ? formMethods.handleSubmit(onSubmit, onError)
     : undefined;
@@ -43,3 +42,6 @@ export function Form<T extends FieldValues = FieldValues>({
     </FormProvider>
   );
 }
+
+// Export Form as default so consumers can import it.
+export default Form;

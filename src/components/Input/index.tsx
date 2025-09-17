@@ -386,8 +386,10 @@ function InputInner<T extends FieldValues = FieldValues>(
   );
 }
 
-const Input = forwardRef(InputInner) as <T extends FieldValues = FieldValues>(
-  props: InputProps<T> & { ref?: React.Ref<HTMLInputElement> }
-) => React.ReactElement;
+const Input = forwardRef(InputInner) as React.ForwardRefExoticComponent<
+  InputProps<any> & React.RefAttributes<HTMLInputElement>
+>;
+
+Input.displayName = "Input";
 
 export default Input;
