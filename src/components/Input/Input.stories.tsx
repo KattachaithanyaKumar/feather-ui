@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import Input from ".";
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -23,13 +24,14 @@ const meta: Meta<typeof Input> = {
       control: { type: "radio" },
       options: ["text", "password", "email", "number"],
     },
+    clearable: { control: "boolean" },
+    togglePassword: { control: "boolean" },
   },
 };
 
 export default meta;
 type Story = StoryObj<typeof Input>;
 
-/** Basic variants */
 export const Outlined: Story = {
   args: {
     variant: "outlined",
@@ -62,7 +64,6 @@ export const Underlined: Story = {
   },
 };
 
-/** Sizes */
 export const Sizes: Story = {
   args: {
     variant: "outlined",
@@ -71,14 +72,28 @@ export const Sizes: Story = {
   },
   render: (args) => (
     <div className="flex flex-col gap-4">
-      <Input {...args} size="sm" label="Small (sm)" placeholder="small" />
-      <Input {...args} size="md" label="Medium (md)" placeholder="medium" />
-      <Input {...args} size="lg" label="Large (lg)" placeholder="large" />
+      <Input
+        {...(args as any)}
+        size="sm"
+        label="Small (sm)"
+        placeholder="small"
+      />
+      <Input
+        {...(args as any)}
+        size="md"
+        label="Medium (md)"
+        placeholder="medium"
+      />
+      <Input
+        {...(args as any)}
+        size="lg"
+        label="Large (lg)"
+        placeholder="large"
+      />
     </div>
   ),
 };
 
-/** Status / helper / error */
 export const HelperAndError: Story = {
   args: {
     variant: "outlined",
@@ -87,9 +102,9 @@ export const HelperAndError: Story = {
     placeholder: "Try it",
   },
   decorators: [
-    (Story) => (
+    (StoryComponent) => (
       <div style={{ display: "grid", gap: 12, width: 420 }}>
-        <Story />
+        <StoryComponent />
         <Input
           variant="outlined"
           label="Error example"
@@ -109,7 +124,6 @@ export const HelperAndError: Story = {
   ],
 };
 
-/** Prefix and suffix examples */
 export const WithPrefixSuffix: Story = {
   args: {
     variant: "outlined",
@@ -120,29 +134,41 @@ export const WithPrefixSuffix: Story = {
   },
 };
 
-/** Clearable */
 export const Clearable: Story = {
-  args: {
-    variant: "outlined",
-    label: "Clearable input",
-    clearable: true,
-    placeholder: "Type then clear",
+  render: (args) => {
+    // Use uncontrolled defaultValue so Input's internal clear button works
+    return (
+      <div style={{ width: 420 }}>
+        <Input
+          {...(args as any)}
+          variant="outlined"
+          label="Clearable input"
+          defaultValue="Type then clear"
+          clearable
+        />
+      </div>
+    );
   },
+  args: {},
 };
 
-/** Password toggle */
-export const PasswordToggle: Story = {
-  args: {
-    variant: "outlined",
-    label: "Password",
-    type: "password",
-    togglePassword: true,
-    placeholder: "Enter password",
-    clearable: true,
-  },
+export const Password: Story = {
+  render: (args) => (
+    <div style={{ width: 420 }}>
+      <Input
+        {...(args as any)}
+        variant="outlined"
+        label="Password"
+        type="password"
+        placeholder="Enter password"
+        togglePassword
+        clearable
+      />
+    </div>
+  ),
+  args: {},
 };
 
-/** Character counter */
 export const Counter: Story = {
   args: {
     variant: "outlined",
@@ -153,18 +179,16 @@ export const Counter: Story = {
   },
 };
 
-/** Controlled component demo (renders with internal state) */
 export const Controlled: Story = {
   render: (args) => {
     const [value, setValue] = useState("controlled value");
     return (
       <div style={{ width: 420 }}>
         <Input
-          {...args}
+          {...(args as any)}
           label="Controlled input"
           value={value}
-          onChange={(e) => setValue(e.target.value)}
-          clearable
+          onChange={(e) => setValue((e.target as HTMLInputElement).value)}
         />
         <div style={{ marginTop: 8, fontSize: 13, color: "#555" }}>
           <strong>Current value:</strong> {value}
@@ -177,7 +201,6 @@ export const Controlled: Story = {
   },
 };
 
-/** Compact showcase: all variants in a row */
 export const Showcase: Story = {
   render: () => (
     <div style={{ display: "grid", gap: 12, width: 640 }}>

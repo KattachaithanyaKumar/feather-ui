@@ -1,14 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, {
   forwardRef,
-  useState,
-  useMemo,
-  useEffect,
   useCallback,
+  useEffect,
   useId,
+  useMemo,
+  useState,
 } from "react";
 import clsx from "clsx";
+import type {
+  Control,
+  FieldError,
+  FieldValues,
+  Path,
+  RegisterOptions,
+} from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 
-/** Sizes */
 const sizes = {
   sm: "h-9 px-2 text-sm",
   md: "h-10 px-3 text-base",
@@ -16,20 +24,18 @@ const sizes = {
 } as const;
 type Size = keyof typeof sizes;
 
-/** Variants */
 const variantClasses = {
   outlined:
-    "border rounded-md bg-white border-gray-300 focus-within:ring-2 focus-within:ring-gray-300",
+    "border rounded-md bg-white border-[var(--color-gray-300)] focus-within:ring-2 focus-within:ring-[var(--color-gray-300)]",
   borderless:
-    "bg-transparent border-0 focus-within:ring-2 focus-within:ring-gray-300",
+    "bg-transparent border-0 focus-within:ring-2 focus-within:ring-[var(--color-gray-300)] rounded-md",
   filled:
-    "rounded-md bg-gray-100 border border-transparent focus-within:ring-2 focus-within:ring-gray-300",
+    "rounded-md bg-[var(--color-gray-100)] border border-transparent focus-within:ring-2 focus-within:ring-[var(--color-gray-300)]",
   underlined:
-    "bg-transparent border-0 border-b border-gray-300 focus-within:ring-2 focus-within:ring-gray-300",
+    "bg-transparent border-0 border-b border-[var(--color-gray-300)] focus-within:ring-2 focus-within:ring-[var(--color-gray-300)] rounded-md",
 } as const;
 type Variant = keyof typeof variantClasses;
 
-/** Status */
 const statusClasses = {
   error:
     "focus-within:ring-red-500 data-[status=error]:border-red-500 data-[status=error]:focus-within:ring-red-500",
@@ -38,79 +44,80 @@ const statusClasses = {
 } as const;
 type Status = keyof typeof statusClasses;
 
-export type InputProps = Omit<
-  React.InputHTMLAttributes<HTMLInputElement>,
-  "size"
-> & {
+export interface InputProps<T extends FieldValues = FieldValues>
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "prefix"> {
+  name?: Path<T>;
+  control?: Control<T>;
+  rules?: Omit<
+    RegisterOptions<T, Path<T>>,
+    "setValueAs" | "disable" | "valueAsNumber" | "valueAsDate"
+  >;
+  error?: FieldError | string;
+
   size?: Size;
   variant?: Variant;
-  showCount?: boolean;
-  /** Character cap for the counter and maxLength attribute */
   maxLimit?: number;
+  showCount?: boolean;
   status?: Status;
-  /** Visually-associated label text */
-  label?: string;
-  /** Optional helper text under the field (errors, hints, etc.) */
-  helperText?: string;
-  /** Node before the input (icon, text) */
+
+  label?: React.ReactNode | string;
   prefix?: React.ReactNode;
-  /** Node after the input (icon, text) */
   suffix?: React.ReactNode;
-  /** Show a clear “×” button when there is a value */
+  helperText?: string;
+
   clearable?: boolean;
-  /** If type="password", allow toggling visibility */
   togglePassword?: boolean;
-  /** Called with the next string value whenever it changes */
-  onValueChange?: (next: string) => void;
-};
+}
 
 const inputBase =
-  "block w-full bg-transparent outline-none placeholder:text-gray-400 disabled:opacity-60";
-
-/** Wrapper applies borders, rings, and padding; input gets bg-transparent */
+  "block w-full bg-transparent outline-none placeholder:text-[var(--color-gray-400)] disabled:opacity-60";
 const wrapperBase = "inline-flex w-full flex-col gap-1";
 const fieldRowBase =
   "inline-flex items-center gap-2 border transition-[box-shadow,border-color]";
-
-/** Button used for clear / toggle */
 const subtleBtn =
-  "shrink-0 inline-flex items-center justify-center rounded-md px-1 py-0.5 text-xs text-gray-600 hover:bg-gray-100 focus:outline-none focus-visible:ring-2";
+  "shrink-0 inline-flex items-center justify-center rounded-md px-1 py-0.5 text-xs text-[var(--color-gray-600)] hover:bg-[var(--color-gray-100)] focus:outline-none focus-visible:ring-2";
 
-const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  {
+function InputInner<T extends FieldValues = FieldValues>(
+  props: InputProps<T>,
+  ref: React.ForwardedRef<HTMLInputElement>
+) {
+  const {
     size = "md",
     variant = "outlined",
-    showCount = false,
     maxLimit = 100,
+    showCount = false,
     status,
     className,
     onChange,
-    onValueChange,
     value: valueProp,
     defaultValue,
     id,
     type = "text",
     label,
-    helperText,
+    placeholder,
     prefix,
     suffix,
+    error,
+    helperText,
+    disabled,
+    name,
+    control,
+    rules,
     clearable = false,
     togglePassword = false,
-    children, // intentionally unused to keep component simple
-    dangerouslySetInnerHTML, // intentionally disabled for safety
     ...rest
-  },
-  ref
-) {
-  void children;
-  void dangerouslySetInnerHTML;
+  } = props;
+
+  const ctx = useFormContext();
+  const ctxControl =
+    (control as Control<T> | undefined) ??
+    (ctx && (ctx as any).control ? (ctx as any).control : undefined);
 
   const autoId = useId();
   const inputId = id ?? `in-${autoId}`;
   const helpId = `${inputId}-help`;
   const countId = `${inputId}-count`;
 
-  // Uncontrolled initial value
   const initial = useMemo(() => {
     if (typeof defaultValue === "string") return defaultValue;
     if (typeof defaultValue === "number") return String(defaultValue);
@@ -122,14 +129,22 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   const rawValue = isControlled
     ? (valueProp as string | number | undefined) ?? ""
     : internalValue;
-
-  // Always string for the DOM input
   const valueStr = useMemo(
     () => (rawValue == null ? "" : String(rawValue)),
     [rawValue]
   );
 
-  // Enforce maxLimit on uncontrolled, and emit onValueChange
+  useEffect(() => {
+    if (
+      !isControlled &&
+      typeof maxLimit === "number" &&
+      maxLimit > 0 &&
+      internalValue.length > maxLimit
+    ) {
+      setInternalValue((s) => s.slice(0, maxLimit));
+    }
+  }, [internalValue, isControlled, maxLimit]);
+
   const setValue = useCallback(
     (next: string) => {
       const trimmed =
@@ -137,9 +152,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           ? next.slice(0, maxLimit)
           : next;
       if (!isControlled) setInternalValue(trimmed);
-      onValueChange?.(trimmed);
     },
-    [isControlled, maxLimit, onValueChange]
+    [isControlled, maxLimit]
   );
 
   const handleChange = useCallback(
@@ -151,16 +165,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     [setValue, onChange]
   );
 
-  // Keep uncontrolled value clamped if maxLimit changes
-  useEffect(() => {
-    if (!isControlled && typeof maxLimit === "number" && maxLimit > 0) {
-      if (internalValue.length > maxLimit) {
-        setInternalValue((s) => s.slice(0, maxLimit));
-      }
-    }
-  }, [internalValue, isControlled, maxLimit]);
-
-  // Password toggle
   const [showPassword, setShowPassword] = useState(false);
   const effectiveType =
     type === "password" && togglePassword
@@ -170,21 +174,144 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       : type;
 
   const wrapperClasses = clsx(wrapperBase, className);
-
   const fieldRowClasses = clsx(
     fieldRowBase,
     sizes[size],
     variantClasses[variant],
     status ? statusClasses[status] : null,
-    // Provide status as data attr for CSS targeting if desired
     status && `data-[status=${status}]`
   );
 
-  const describedByIds: string[] = [];
-  if (helperText) describedByIds.push(helpId);
-  if (showCount) describedByIds.push(countId);
+  const describedBy: string[] = [];
+  if (error || helperText) describedBy.push(helpId);
+  if (showCount) describedBy.push(countId);
+  const canClear = clearable && !disabled && valueStr.length > 0;
 
-  const canClear = clearable && valueStr.length > 0 && !rest.disabled;
+  if (ctxControl && name) {
+    return (
+      <Controller
+        name={name as any}
+        control={ctxControl as any}
+        rules={rules as any}
+        render={({ field, fieldState }) => {
+          const fieldValue = field.value ?? "";
+          const showError =
+            Boolean(fieldState.error?.message) || Boolean(error);
+          const errorMessage =
+            fieldState.error?.message ??
+            (typeof error === "string"
+              ? error
+              : (error as FieldError)?.message);
+          return (
+            <div className={wrapperClasses} data-status={status}>
+              {label && (
+                <label
+                  htmlFor={inputId}
+                  className="text-sm font-medium text-gray-800"
+                >
+                  {label}
+                  {rest.required && (
+                    <span className="ml-0.5 text-red-600">*</span>
+                  )}
+                </label>
+              )}
+
+              <div className={fieldRowClasses}>
+                {prefix && <div className="shrink-0">{prefix}</div>}
+
+                <input
+                  {...(rest as any)}
+                  id={inputId}
+                  ref={(r) => {
+                    field.ref(r);
+                    if (typeof ref === "function") ref(r);
+                    else if (ref)
+                      (
+                        ref as React.MutableRefObject<HTMLInputElement | null>
+                      ).current = r;
+                  }}
+                  type={effectiveType}
+                  value={String(fieldValue)}
+                  onChange={(e) => {
+                    const next = e.target.value;
+                    const trimmed =
+                      typeof maxLimit === "number" && maxLimit > 0
+                        ? next.slice(0, maxLimit)
+                        : next;
+                    field.onChange(trimmed);
+                    setValue(trimmed);
+                  }}
+                  placeholder={placeholder}
+                  className={clsx(inputBase, "min-w-0 flex-1")}
+                  aria-invalid={showError ? "true" : undefined}
+                  aria-describedby={
+                    describedBy.length ? describedBy.join(" ") : undefined
+                  }
+                  disabled={disabled}
+                  maxLength={
+                    typeof maxLimit === "number" ? maxLimit : undefined
+                  }
+                />
+
+                {canClear && (
+                  <button
+                    type="button"
+                    className={subtleBtn}
+                    aria-label="Clear input"
+                    onClick={() => {
+                      field.onChange("");
+                      setValue("");
+                    }}
+                  >
+                    ×
+                  </button>
+                )}
+
+                {type === "password" && togglePassword && (
+                  <button
+                    type="button"
+                    className={subtleBtn}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
+                    onClick={() => setShowPassword((s) => !s)}
+                  >
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+                )}
+
+                {suffix && <div className="shrink-0">{suffix}</div>}
+              </div>
+
+              <div
+                id={helpId}
+                className={clsx(
+                  "text-xs",
+                  showError ? "text-red-600" : "text-gray-600"
+                )}
+              >
+                {showError ? errorMessage : helperText}
+              </div>
+
+              {showCount && typeof maxLimit === "number" && (
+                <div
+                  id={countId}
+                  className="self-end text-[11px] text-gray-500"
+                  aria-live="polite"
+                >
+                  {String(fieldValue).length} / {maxLimit}
+                </div>
+              )}
+            </div>
+          );
+        }}
+      />
+    );
+  }
+
+  const showError = Boolean(error);
+  const errorMessage =
+    typeof error === "string" ? error : (error as FieldError)?.message;
 
   return (
     <div className={wrapperClasses} data-status={status}>
@@ -197,23 +324,22 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
 
       <div className={fieldRowClasses}>
         {prefix && <div className="shrink-0">{prefix}</div>}
-
         <input
-          {...rest}
+          {...(rest as any)}
           id={inputId}
           ref={ref}
           type={effectiveType}
           value={valueStr}
           onChange={handleChange}
+          placeholder={placeholder}
           className={clsx(inputBase, "min-w-0 flex-1")}
-          aria-invalid={status === "error" ? "true" : undefined}
+          aria-invalid={showError ? "true" : undefined}
           aria-describedby={
-            describedByIds.length ? describedByIds.join(" ") : undefined
+            describedBy.length ? describedBy.join(" ") : undefined
           }
+          disabled={disabled}
           maxLength={typeof maxLimit === "number" ? maxLimit : undefined}
         />
-
-        {/* Clear button */}
         {canClear && (
           <button
             type="button"
@@ -224,8 +350,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
             ×
           </button>
         )}
-
-        {/* Password visibility toggle */}
         {type === "password" && togglePassword && (
           <button
             type="button"
@@ -236,28 +360,19 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
             {showPassword ? "Hide" : "Show"}
           </button>
         )}
-
         {suffix && <div className="shrink-0">{suffix}</div>}
       </div>
 
-      {/* Helper / error text */}
-      {helperText && (
-        <div
-          id={helpId}
-          className={clsx(
-            "text-xs",
-            status === "error"
-              ? "text-red-600"
-              : status === "warning"
-              ? "text-yellow-700"
-              : "text-gray-600"
-          )}
-        >
-          {helperText}
-        </div>
-      )}
+      <div
+        id={helpId}
+        className={clsx(
+          "text-xs",
+          showError ? "text-red-600" : "text-gray-600"
+        )}
+      >
+        {showError ? errorMessage : helperText}
+      </div>
 
-      {/* Character counter */}
       {showCount && typeof maxLimit === "number" && (
         <div
           id={countId}
@@ -269,8 +384,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       )}
     </div>
   );
-});
+}
 
-Input.displayName = "Input";
+const Input = forwardRef(InputInner) as <T extends FieldValues = FieldValues>(
+  props: InputProps<T> & { ref?: React.Ref<HTMLInputElement> }
+) => React.ReactElement;
 
 export default Input;
