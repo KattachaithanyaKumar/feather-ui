@@ -4,6 +4,12 @@ export type { ButtonProps } from "./components/Button";
 export { default as Input } from "./components/Input";
 export type { InputProps } from "./components/Input";
 
+export { default as TextArea } from "./components/Textarea";
+export type { TextareaProps } from "./components/Textarea";
+
+export { default as DatePicker } from "./components/DatePicker";
+export type { DatePickerProps } from "./components/DatePicker";
+
 export { default as Form } from "./components/Form";
 export type { FormProps } from "./components/Form";
 

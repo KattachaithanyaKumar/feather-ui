@@ -18,9 +18,9 @@ import type {
 import { Controller, useFormContext } from "react-hook-form";
 
 const sizes = {
-  sm: "min-h-[72px] px-1 text-sm",
-  md: "min-h-[96px] px-2 text-base",
-  lg: "min-h-[128px] px-2 text-lg",
+  sm: "min-h-[72px] pl-1 text-sm",
+  md: "min-h-[96px] pl-2 text-base",
+  lg: "min-h-[128px] pl-2 text-lg",
 } as const;
 type Size = keyof typeof sizes;
 
@@ -73,9 +73,9 @@ export interface TextareaProps<T extends FieldValues = FieldValues>
 
 const wrapperBase = "inline-flex w-full flex-col gap-1";
 const fieldRowBase =
-  "inline-flex items-start gap-2 border transition-[box-shadow,border-color]";
+  "inline-flex items-stretch gap-2 border transition-[box-shadow,border-color]";
 const textareaBase =
-  "w-full resize-vertical bg-transparent outline-none placeholder:text-[var(--color-gray-400)] disabled:opacity-60 py-2";
+  "w-full min-h-[inherit] resize-vertical bg-transparent outline-none placeholder:text-[var(--color-gray-400)] disabled:opacity-60 py-2";
 const subtleBtn =
   "shrink-0 inline-flex items-center justify-center rounded-md px-1 py-0.5 text-xs text-[var(--color-gray-600)] hover:bg-[var(--color-gray-100)] focus:outline-none focus-visible:ring-2";
 
@@ -332,13 +332,17 @@ function TextareaInner<T extends FieldValues = FieldValues>(
       )}
 
       <div className={fieldRowClasses}>
-        {prefix && <div className="shrink-0 mt-2">{prefix}</div>}
+        {prefix && (
+          <div className="shrink-0 flex items-center self-stretch">
+            {prefix}
+          </div>
+        )}
 
         <textarea
           {...(rest as any)}
           id={textareaId}
           ref={ref}
-          className={clsx(textareaBase, "min-w-0 flex-1", sizes[size])}
+          className={clsx(textareaBase, "min-w-0 flex-1")}
           placeholder={placeholder}
           value={valueStr}
           onChange={handleChange}
@@ -360,7 +364,11 @@ function TextareaInner<T extends FieldValues = FieldValues>(
           </button>
         )}
 
-        {suffix && <div className="shrink-0 mt-2">{suffix}</div>}
+        {suffix && (
+          <div className="shrink-0 flex items-center self-stretch">
+            {suffix}
+          </div>
+        )}
       </div>
 
       <div

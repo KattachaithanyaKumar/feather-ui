@@ -5,5 +5,7 @@ import "./styles/feather-theme.css";
 export { default as Button } from "./components/Button";
 export { default as Loader } from "./helperComponents/Loader";
 export { default as Input } from "./components/Input";
+export { default as TextArea } from "./components/Textarea";
+export { default as DatePicker } from "./components/DatePicker";
 export { default as Form } from "./components/Form";
 export { setFeatherTheme } from "./theme/setTheme";
